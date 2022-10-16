@@ -37,6 +37,6 @@ workflows:
     jobs:
       - say-hello
       - say-Phil
-        requires:
-            - say-hello
+          requires:
+              - say-hello
   
