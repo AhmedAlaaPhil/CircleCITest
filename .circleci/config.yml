@@ -2,42 +2,54 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+executors :
+  my-executor : 
+    docker :
+       - image: cimg/base:stable
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
+  Upload_File:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
+    executor: my-executor
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-  say-Phil:
+      - run: mkdir -p workspace
+      - run: echo "Hello, world!" > workspace/echo-output
+      - persist_to_workspace: 
+        root: workspace
+        path: 
+          - echo-output
+
+
+  Download_File:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
+    executor: my-executor
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - run:
-          name: "Say hello Phil"
-          command: |
-            echo $MY_ENV_VAR
+      - attach_workspace:
+        at: /tmp/workspace
+      - run: |
+          if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
+            echo "It worked!";
+          else
+            echo "Nope!"; exit 1
+          fi
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
-      - say-Phil:
+      - Upload_File
+      - Download_File:
           requires:
-              - say-hello
+              - Upload_File
   
