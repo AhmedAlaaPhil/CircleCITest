@@ -27,9 +27,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Say hello Phil"
-          command: |
-            echo $MY_ENV_VAR
           name: "MVN"
           command: |
             mvn -v
