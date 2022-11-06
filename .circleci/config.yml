@@ -8,18 +8,6 @@ version: 2.1
 orbs:
    aws-cli: circleci/aws-cli@2.0.3
 jobs:
-  create_infrastructure: 
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Create Cloudformation Stack
-          command: |
-            aws cloudformation deploy \
-              --template-file template.yml \
-              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
-              --region us-east-1
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
@@ -27,15 +15,16 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["7b:24:6a:c4:2e:2e:d4:4b:52:49:0b:19:de:90:af:59"] 
+          fingerprints: ["7b:24:6a:c4:2e:2e:d4:4b:52:49:0b:19:de:90:af:59"] # You can get this ID in the section where you registered the SSH Key
       - run:
-          name: Install Ansible
+          name: Install dependencies
           command: |
-            apk add --update ansible
+            # install the dependencies needed for your playbook
+            apk add --update ansible 
       - run:
-          name: Run Playbook and Configure server
+          name: Configure server
           command: |
-            ansible-playbook main-remote.yml -i inventory.txt --private-key TestKey.pem
+            ansible-playbook -i inventory.txt main-remote.yml
 
 The new job should:
 # Sequential workflow
