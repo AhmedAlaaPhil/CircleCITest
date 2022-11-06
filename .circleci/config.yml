@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook main-remote.yml -i inventory.txt 
+            ansible-playbook main-remote.yml -i inventory.txt --private-key TestKey.pem
 
 The new job should:
 # Sequential workflow
